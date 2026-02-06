@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprendamos los Signos Matemáticos</title>
+<style>
+body{
+  margin:0;
+  font-family:'Comic Sans MS','Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#fdfbfb,#ebedee);
+}
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+h1{text-align:center;color:#1a237e}
+h2{color:#283593}
+.section{
+  background:#ffffff;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:25px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+.card{
+  background:#e8eaf6;
+  border-radius:15px;
+  padding:15px;
+  text-align:center;
+  font-size:1.05em;
+}
+.symbol{font-size:2em;font-weight:bold}
+button{
+  padding:12px 18px;
+  margin:6px;
+  border:none;
+  border-radius:15px;
+  background:linear-gradient(135deg,#3f51b5,#5c6bc0);
+  color:white;
+  font-size:1em;
+  cursor:pointer;
+}
+button:hover{transform:scale(1.05)}
+.result{font-weight:bold;margin-top:10px}
+.score{text-align:center;font-size:1.4em;color:#1a237e}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📘 Aprendamos los Signos Matemáticos</h1>
+
+<div class="section">
+<h2>➕ Signos de las operaciones</h2>
+<div class="grid">
+  <div class="card"><div class="symbol">+</div>Suma (más)</div>
+  <div class="card"><div class="symbol">−</div>Resta (menos)</div>
+  <div class="card"><div class="symbol">× · *</div>Multiplicación (por)</div>
+  <div class="card"><div class="symbol">÷</div>División</div>
+  <div class="card"><div class="symbol">=</div>Igual</div>
+  <div class="card"><div class="symbol">√</div>Raíz cuadrada</div>
+  <div class="card"><div class="symbol">aⁿ</div>Potenciación</div>
+  <div class="card"><div class="symbol">log</div>Logaritmo</div>
+</div>
+</div>
+
+<div class="section">
+<h2>🔗 Signos de agrupación (asociación)</h2>
+<div class="grid">
+  <div class="card"><div class="symbol">( )</div>Paréntesis</div>
+  <div class="card"><div class="symbol">[ ]</div>Corchetes</div>
+  <div class="card"><div class="symbol">{ }</div>Llaves</div>
+</div>
+</div>
+
+<div class="section">
+<h2>🧺 Signos de conjuntos</h2>
+<div class="grid">
+  <div class="card"><div class="symbol">∈</div>Pertenece</div>
+  <div class="card"><div class="symbol">∉</div>No pertenece</div>
+  <div class="card"><div class="symbol">∪</div>Unión</div>
+  <div class="card"><div class="symbol">∩</div>Intersección</div>
+  <div class="card"><div class="symbol">⊂</div>Contenido en</div>
+  <div class="card"><div class="symbol">⊄</div>No contenido en</div>
+  <div class="card"><div class="symbol">∅</div>Conjunto vacío</div>
+  <div class="card"><div class="symbol">∞</div>Infinito</div>
+</div>
+</div>
+
+<div class="section">
+<h2>📏 Signos de comparación</h2>
+<div class="grid">
+  <div class="card"><div class="symbol">&gt;</div>Mayor que</div>
+  <div class="card"><div class="symbol">&lt;</div>Menor que</div>
+  <div class="card"><div class="symbol">≥</div>Mayor o igual que</div>
+  <div class="card"><div class="symbol">≤</div>Menor o igual que</div>
+  <div class="card"><div class="symbol">=</div>Igual que</div>
+</div>
+</div>
+
+<div class="section">
+<h2>🎯 Quiz interactivo</h2>
+<p><strong>Indicaciones:</strong> Lee la pregunta y selecciona la respuesta correcta. Las preguntas salen <b>al azar</b> y pueden ser de <b>identificar el símbolo</b> o de <b>clasificar el grupo al que pertenece</b>.</p>
+<p id="question"></p>
+<div id="options"></div>
+<div id="feedback" class="result"></div>
+</div>
+
+</div>
+
+<div class="score" id="score">Puntaje: 0 | Intentos: 0</div>
+<div style="text-align:center">
+<button onclick="newQuestion()">🔄 Nuevo quiz</button>
+</div>
+</div>
+
+<script>
+let score = 0;
+let intentos = 0;
+let maxPreguntas = 15;
+let preguntasHechas = 0;
+
+const soundOk = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+const soundBad = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg');
+const soundEnd = new Audio('https://actions.google.com/sounds/v1/cartoon/concussive_hit_guitar_boing.ogg');
+
+const symbols = [
+ {s:'+', name:'Suma', group:'Operaciones'},
+ {s:'−', name:'Resta', group:'Operaciones'},
+ {s:'×', name:'Multiplicación', group:'Operaciones'},
+ {s:'*', name:'Multiplicación', group:'Operaciones'},
+ {s:'·', name:'Multiplicación', group:'Operaciones'},
+ {s:'÷', name:'División', group:'Operaciones'},
+ {s:'/', name:'División', group:'Operaciones'},
+ {s:':', name:'División', group:'Operaciones'},
+ {s:'=', name:'Igual', group:'Operaciones'},
+ {s:'√', name:'Raíz cuadrada', group:'Operaciones'},
+ {s:'aⁿ', name:'Potenciación', group:'Operaciones'},
+ {s:'log', name:'Logaritmo', group:'Operaciones'},
+ {s:'( )', name:'Paréntesis', group:'Asociación'},
+ {s:'[ ]', name:'Corchetes', group:'Asociación'},
+ {s:'{ }', name:'Llaves', group:'Asociación'},
+ {s:'∈', name:'Pertenece', group:'Conjuntos'},
+ {s:'∉', name:'No pertenece', group:'Conjuntos'},
+ {s:'∪', name:'Unión', group:'Conjuntos'},
+ {s:'∩', name:'Intersección', group:'Conjuntos'},
+ {s:'⊂', name:'Contenido en', group:'Conjuntos'},
+ {s:'⊄', name:'No contenido en', group:'Conjuntos'},
+ {s:'∅', name:'Conjunto vacío', group:'Conjuntos'},
+ {s:'∞', name:'Infinito', group:'Conjuntos'},
+ {s:'>', name:'Mayor que', group:'Comparación'},
+ {s:'<', name:'Menor que', group:'Comparación'},
+ {s:'≥', name:'Mayor o igual', group:'Comparación'},
+ {s:'≤', name:'Menor o igual', group:'Comparación'}
+];
+
+function newQuestion(){
+  if(preguntasHechas >= maxPreguntas){
+    document.getElementById('question').textContent = '🎉 Cuestionario finalizado';
+    document.getElementById('options').innerHTML = '';
+    document.getElementById('feedback').textContent = `Resultado final: ${score} / ${maxPreguntas}`;
+    soundEnd.play();
+    return;
+  }
+
+  preguntasHechas++;
+  document.getElementById('feedback').textContent = '';
+  const mode = Math.floor(Math.random() * 3);
+  let question = '';
+  let options = [];
+  let correct = 0;
+
+  if(mode === 0){
+    const sym = symbols[Math.floor(Math.random()*symbols.length)];
+    question = `(${preguntasHechas}/${maxPreguntas}) ¿A qué grupo pertenece el símbolo ${sym.s}?`;
+    options = ['Operaciones','Asociación','Conjuntos','Comparación'];
+    correct = options.indexOf(sym.group);
+  }
+
+  if(mode === 1){
+    const sym = symbols[Math.floor(Math.random()*symbols.length)];
+    question = `(${preguntasHechas}/${maxPreguntas}) ¿Qué símbolo representa ${sym.name}?`;
+    const wrong = symbols.filter(x => x.s !== sym.s).sort(() => 0.5 - Math.random()).slice(0,3);
+    options = [sym.s, ...wrong.map(x => x.s)].sort(() => 0.5 - Math.random());
+    correct = options.indexOf(sym.s);
+  }
+
+  if(mode === 2){
+    const groups = ['Operaciones','Asociación','Conjuntos','Comparación'];
+    const grp = groups[Math.floor(Math.random()*groups.length)];
+    const good = symbols.filter(x => x.group === grp);
+    const bad = symbols.filter(x => x.group !== grp);
+    const goodSym = good[Math.floor(Math.random()*good.length)].s;
+    const badSym = bad[Math.floor(Math.random()*bad.length)].s;
+    question = `(${preguntasHechas}/${maxPreguntas}) ¿Cuál símbolo pertenece al grupo ${grp}?`;
+    options = [goodSym, badSym].sort(() => 0.5 - Math.random());
+    correct = options.indexOf(goodSym);
+  }
+
+  document.getElementById('question').textContent = question;
+  const opt = document.getElementById('options');
+  opt.innerHTML = '';
+
+  options.forEach((op, i) => {
+    const b = document.createElement('button');
+    b.textContent = op;
+    b.onclick = () => check(i, correct);
+    opt.appendChild(b);
+  });
+}
+
+function check(sel, ans){
+  intentos++;
+  const fb = document.getElementById('feedback');
+  if(sel === ans){
+    fb.textContent = '✅ Correcto';
+    fb.style.color = 'green';
+    score++;
+    soundOk.play();
+  } else {
+    fb.textContent = '❌ Incorrecto';
+    fb.style.color = 'red';
+    soundBad.play();
+  }
+  document.getElementById('score').textContent = `Puntaje: ${score} | Pregunta: ${preguntasHechas}/${maxPreguntas}`;
+  setTimeout(newQuestion, 800);
+}
+
+newQuestion();
+</script>
+</body>
+</html>
